@@ -1,0 +1,5 @@
+{
+  "name": "VisionFlow AI",
+  "description": "Professional AI-powered video enhancement and restoration platform.",
+  "requestFramePermissions": ["camera", "microphone"]
+}
