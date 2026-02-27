@@ -273,13 +273,22 @@ export default function App() {
         {/* Left Sidebar - Controls */}
         <AnimatePresence mode="wait">
           {showSidebar && (
-            <motion.aside 
-              initial={{ x: -320 }}
-              animate={{ x: 0 }}
-              exit={{ x: -320 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="w-80 flex-shrink-0 border-r border-zinc-800/50 flex flex-col bg-[#09090b] overflow-y-auto custom-scrollbar z-20 absolute lg:relative h-full"
-            >
+            <>
+              {/* Mobile Backdrop */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowSidebar(false)}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-10 lg:hidden"
+              />
+              <motion.aside 
+                initial={{ x: -320 }}
+                animate={{ x: 0 }}
+                exit={{ x: -320 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="w-80 flex-shrink-0 border-r border-zinc-800/50 flex flex-col bg-[#09090b] overflow-y-auto custom-scrollbar z-20 absolute lg:relative h-full"
+              >
               <div className="p-6 space-y-8 pb-24">
                 <div className="flex items-center justify-between pb-2 border-b border-zinc-800/50">
                   <div className="flex items-center gap-2">
@@ -434,8 +443,9 @@ export default function App() {
                 </div>
               </div>
             </motion.aside>
-          )}
-        </AnimatePresence>
+          </>
+        )}
+      </AnimatePresence>
 
         {/* Center - Viewport */}
         <section className="flex-1 bg-black relative flex flex-col">
@@ -450,7 +460,7 @@ export default function App() {
                     <video 
                       ref={videoRef}
                       src={videoUrl} 
-                      className="absolute inset-0 w-full h-full object-cover grayscale opacity-50 blur-[2px]"
+                      className="absolute inset-0 w-full h-full object-cover"
                       muted
                       loop
                       autoPlay
