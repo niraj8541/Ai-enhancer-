@@ -1,5 +1,5 @@
 {
-  "name": "VisionFlow AI",
-  "description": "Professional AI-powered video enhancement and restoration platform.",
+  "name": "VisionFlow AI Studio",
+  "description": "Professional AI Photo & Video Enhancer with Motion Creative Tools. Powered by Topaz AI and VisionFlow Neural Engines.",
   "requestFramePermissions": ["camera", "microphone"]
 }
