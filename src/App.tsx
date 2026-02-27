@@ -120,8 +120,8 @@ const EnhancementCard = ({ task }: { task: EnhancementTask }) => (
   </div>
 );
 
-const TopazSlider = ({ label, value, onChange, min = 0, max = 100 }: { label: string, value: number, onChange: (v: number) => void, min?: number, max?: number }) => (
-  <div className="space-y-2">
+const TopazSlider = ({ label, value, onChange, min = 0, max = 100, disabled = false }: { label: string, value: number, onChange: (v: number) => void, min?: number, max?: number, disabled?: boolean }) => (
+  <div className={cn("space-y-2 transition-opacity", disabled && "opacity-40 pointer-events-none")}>
     <div className="flex justify-between items-center">
       <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{label}</label>
       <span className="text-[10px] font-mono text-zinc-300">{value}</span>
@@ -132,15 +132,20 @@ const TopazSlider = ({ label, value, onChange, min = 0, max = 100 }: { label: st
       max={max} 
       value={value} 
       onChange={(e) => onChange(parseInt(e.target.value))}
+      disabled={disabled}
       className="w-full h-1 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-emerald-500"
     />
   </div>
 );
 
-const TopazToggle = ({ label, active, onToggle }: { label: string, active: boolean, onToggle: () => void }) => (
+const TopazToggle = ({ label, active, onToggle, disabled = false }: { label: string, active: boolean, onToggle: () => void, disabled?: boolean }) => (
   <button 
     onClick={onToggle}
-    className="flex items-center justify-between w-full group"
+    disabled={disabled}
+    className={cn(
+      "flex items-center justify-between w-full group transition-opacity",
+      disabled && "opacity-40 pointer-events-none"
+    )}
   >
     <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-200 transition-colors">{label}</span>
     <div className={cn(
@@ -164,6 +169,7 @@ export default function App() {
   const [aiAnalysis, setAiAnalysis] = useState<string>("");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isEnhanced, setIsEnhanced] = useState(false);
   
   // Topaz Settings State
   const [selectedModel, setSelectedModel] = useState('Proteus');
@@ -191,6 +197,7 @@ export default function App() {
     if (file) {
       setVideoFile(file);
       setVideoUrl(URL.createObjectURL(file));
+      setIsEnhanced(false);
       runAiAnalysis(file.name);
     }
   };
@@ -218,6 +225,7 @@ export default function App() {
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
+      setIsEnhanced(true);
     }, 5000);
   };
 
@@ -304,7 +312,7 @@ export default function App() {
                 </div>
 
                 {/* AI Model Section */}
-                <section>
+                <section className={cn("transition-opacity", !videoUrl && "opacity-40 pointer-events-none")}>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">AI Enhancement Model</h3>
                     <Sparkles size={14} className="text-emerald-500" />
@@ -313,6 +321,7 @@ export default function App() {
                     {['Proteus', 'Artemis', 'Gaia', 'Iris', 'Nyx'].map(model => (
                       <button 
                         key={model}
+                        disabled={!videoUrl}
                         onClick={() => setSelectedModel(model)}
                         className={cn(
                           "flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm group",
@@ -338,12 +347,13 @@ export default function App() {
                 </section>
 
                 {/* Upscale Section */}
-                <section>
+                <section className={cn("transition-opacity", !videoUrl && "opacity-40 pointer-events-none")}>
                   <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">Output Resolution</h3>
                   <div className="grid grid-cols-4 gap-2">
                     {['1x', '2x', '4x', '8x'].map(factor => (
                       <button 
                         key={factor}
+                        disabled={!videoUrl}
                         onClick={() => setUpscaleFactor(factor)}
                         className={cn(
                           "py-2 rounded-lg border text-xs font-mono transition-all",
@@ -359,25 +369,25 @@ export default function App() {
                 </section>
 
                 {/* Model Parameters */}
-                <section className="space-y-6 bg-zinc-900/30 p-4 rounded-2xl border border-zinc-800/50">
+                <section className={cn("space-y-6 bg-zinc-900/30 p-4 rounded-2xl border border-zinc-800/50 transition-opacity", !videoUrl && "opacity-40 pointer-events-none")}>
                   <div className="flex items-center gap-2 mb-2">
                     <Sliders size={14} className="text-zinc-500" />
                     <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Model Parameters</h3>
                   </div>
-                  <TopazSlider label="Revert Compression" value={revertCompression} onChange={setRevertCompression} />
-                  <TopazSlider label="Recover Details" value={recoverDetails} onChange={setRecoverDetails} />
-                  <TopazSlider label="Sharpen" value={sharpen} onChange={setSharpen} />
-                  <TopazSlider label="Reduce Noise" value={denoise} onChange={setDenoise} />
-                  <TopazSlider label="Motion Deblur" value={15} onChange={() => {}} />
-                  <TopazSlider label="Dehalo" value={5} onChange={() => {}} />
-                  <TopazSlider label="Anti-Alias" value={10} onChange={() => {}} />
-                  <TopazSlider label="Add Grain" value={8} onChange={() => {}} />
+                  <TopazSlider label="Revert Compression" value={revertCompression} onChange={setRevertCompression} disabled={!videoUrl} />
+                  <TopazSlider label="Recover Details" value={recoverDetails} onChange={setRecoverDetails} disabled={!videoUrl} />
+                  <TopazSlider label="Sharpen" value={sharpen} onChange={setSharpen} disabled={!videoUrl} />
+                  <TopazSlider label="Reduce Noise" value={denoise} onChange={setDenoise} disabled={!videoUrl} />
+                  <TopazSlider label="Motion Deblur" value={15} onChange={() => {}} disabled={!videoUrl} />
+                  <TopazSlider label="Dehalo" value={5} onChange={() => {}} disabled={!videoUrl} />
+                  <TopazSlider label="Anti-Alias" value={10} onChange={() => {}} disabled={!videoUrl} />
+                  <TopazSlider label="Add Grain" value={8} onChange={() => {}} disabled={!videoUrl} />
                 </section>
 
                 {/* Additional Features */}
-                <section className="space-y-4 pt-4 border-t border-zinc-800/50">
-                  <TopazToggle label="Stabilization" active={stabilization} onToggle={() => setStabilization(!stabilization)} />
-                  <TopazToggle label="Frame Interpolation" active={frameInterpolation} onToggle={() => setFrameInterpolation(!frameInterpolation)} />
+                <section className={cn("space-y-4 pt-4 border-t border-zinc-800/50 transition-opacity", !videoUrl && "opacity-40 pointer-events-none")}>
+                  <TopazToggle label="Stabilization" active={stabilization} onToggle={() => setStabilization(!stabilization)} disabled={!videoUrl} />
+                  <TopazToggle label="Frame Interpolation" active={frameInterpolation} onToggle={() => setFrameInterpolation(!frameInterpolation)} disabled={!videoUrl} />
                   
                   {frameInterpolation && (
                     <motion.div 
@@ -389,6 +399,7 @@ export default function App() {
                         {['Apollo', 'Chronos'].map(m => (
                           <button 
                             key={m}
+                            disabled={!videoUrl}
                             onClick={() => setInterpolationModel(m)}
                             className={cn(
                               "flex-1 py-1.5 rounded-lg border text-[10px] font-bold transition-all",
@@ -458,11 +469,24 @@ export default function App() {
         <section className="flex-1 bg-black relative flex flex-col">
           <div className="flex-1 relative overflow-hidden group">
             {videoUrl ? (
-              <div className="w-full h-full relative">
-                {/* Comparison Slider Container */}
-                <div className="absolute inset-0 flex items-center justify-center p-4">
+              <div className="w-full h-full relative flex items-center justify-center p-4">
+                {!isEnhanced ? (
+                  /* Standard Preview with Controls */
                   <div className="relative w-full h-full max-w-5xl bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
-                    
+                    <video 
+                      src={videoUrl} 
+                      className="w-full h-full object-contain"
+                      controls
+                      playsInline
+                    />
+                    <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] font-bold text-white/70 border border-white/10 flex items-center gap-2">
+                      <Video size={12} className="text-zinc-400" />
+                      SOURCE PREVIEW
+                    </div>
+                  </div>
+                ) : (
+                  /* Comparison Slider (Only after enhancement) */
+                  <div className="relative w-full h-full max-w-5xl bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
                     {/* Original (Left) */}
                     <video 
                       ref={videoRef}
@@ -530,26 +554,7 @@ export default function App() {
                       />
                     )}
                   </div>
-                </div>
-
-                {/* Video Controls Overlay */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-zinc-900/80 backdrop-blur-xl px-6 py-3 rounded-2xl border border-zinc-800/50 shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <button className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-zinc-400 hover:text-white">
-                    <Play size={20} fill="currentColor" />
-                  </button>
-                  <div className="w-64 h-1.5 bg-zinc-800 rounded-full relative">
-                    <div className="absolute inset-y-0 left-0 w-1/3 bg-emerald-500 rounded-full" />
-                    <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg" />
-                  </div>
-                  <span className="text-xs font-mono text-zinc-500">00:12 / 00:45</span>
-                  <div className="h-4 w-[1px] bg-zinc-800" />
-                  <button 
-                    onClick={handleDownload}
-                    className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-zinc-400 hover:text-white"
-                  >
-                    <Download size={20} />
-                  </button>
-                </div>
+                )}
               </div>
             ) : (
               <div 
