@@ -287,7 +287,7 @@ export default function App() {
                 animate={{ x: 0 }}
                 exit={{ x: -320 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="w-80 flex-shrink-0 border-r border-zinc-800/50 flex flex-col bg-[#09090b] overflow-y-auto custom-scrollbar z-20 absolute lg:relative h-full"
+                className="w-full sm:w-80 flex-shrink-0 border-r border-zinc-800/50 flex flex-col bg-[#09090b] overflow-y-auto custom-scrollbar z-20 absolute lg:relative h-full"
               >
               <div className="p-6 space-y-8 pb-24">
                 <div className="flex items-center justify-between pb-2 border-b border-zinc-800/50">
@@ -440,6 +440,13 @@ export default function App() {
                       Download Enhanced Video
                     </motion.button>
                   )}
+
+                  <button 
+                    onClick={() => setShowSidebar(false)}
+                    className="lg:hidden w-full py-3 rounded-xl border border-zinc-800 text-zinc-400 font-bold text-xs uppercase tracking-widest hover:bg-zinc-900 transition-all"
+                  >
+                    Close Settings & View Video
+                  </button>
                 </div>
               </div>
             </motion.aside>
@@ -453,30 +460,32 @@ export default function App() {
             {videoUrl ? (
               <div className="w-full h-full relative">
                 {/* Comparison Slider Container */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-full h-full max-w-5xl max-h-[80%] aspect-video bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
+                <div className="absolute inset-0 flex items-center justify-center p-4">
+                  <div className="relative w-full h-full max-w-5xl bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
                     
                     {/* Original (Left) */}
                     <video 
                       ref={videoRef}
                       src={videoUrl} 
-                      className="absolute inset-0 w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                       muted
                       loop
                       autoPlay
+                      playsInline
                     />
                     
                     {/* Enhanced (Right - Masked) */}
                     <div 
-                      className="absolute inset-0 w-full h-full overflow-hidden"
+                      className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center"
                       style={{ clipPath: `inset(0 0 0 ${comparisonValue}%)` }}
                     >
                       <video 
                         src={videoUrl} 
-                        className="absolute inset-0 w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         muted
                         loop
                         autoPlay
+                        playsInline
                       />
                       {/* Enhancement Overlay Effects */}
                       <div className="absolute inset-0 bg-emerald-500/5 pointer-events-none" />
